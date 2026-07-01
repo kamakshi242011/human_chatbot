@@ -1,61 +1,154 @@
 import streamlit as st
 from groq import Groq
-import os
 
-st.set_page_config(page_title="Olivia AI", page_icon="🤖")
+# -------------------------
+# Page Configuration
+# -------------------------
+st.set_page_config(
+    page_title="Olivia AI",
+    page_icon="🤖",
+    layout="centered"
+)
 
-st.title("🤖 AI by Kamakshi")
-st.write("Human-like chatbot powered by Groq")
+# -------------------------
+# Custom CSS
+# -------------------------
+st.markdown("""
+<style>
+.stChatMessage {
+    border-radius:15px;
+}
+footer {
+    visibility:hidden;
+}
+</style>
+""", unsafe_allow_html=True)
 
-# Create Groq client
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+# -------------------------
+# Sidebar
+# -------------------------
+with st.sidebar:
+    st.title("🤖 Olivia AI")
+    st.write("Your Human-like AI Assistant")
 
-# Initialize chat history
+    st.markdown("---")
+
+    st.write("### Model")
+    st.success("Llama 3.3 70B")
+
+    st.markdown("---")
+
+    if st.button("🗑 Clear Chat"):
+        st.session_state.messages = [
+            {
+                "role": "system",
+                "content": """
+You are Olivia, a friendly, intelligent AI assistant.
+
+Rules:
+- Talk naturally.
+- Give detailed answers.
+- Be polite.
+- Explain clearly.
+- Use examples whenever possible.
+"""
+            }
+        ]
+        st.rerun()
+
+    st.markdown("---")
+    st.write("Made ❤️ by Kamakshi")
+
+# -------------------------
+# Title
+# -------------------------
+st.title("🤖 Olivia AI")
+st.caption("Powered by Groq • Llama 3.3 70B")
+
+# -------------------------
+# Groq Client
+# -------------------------
+try:
+    client = Groq(api_key=st.secrets["GROQ_API_KEY"])
+except Exception:
+    st.error("Groq API Key not found!")
+    st.stop()
+
+# -------------------------
+# Initialize Chat
+# -------------------------
 if "messages" not in st.session_state:
     st.session_state.messages = [
         {
             "role": "system",
             "content": """
-You are Olivia, a friendly and natural AI companion.
-Talk like a real person.
-Be warm, engaging, and conversational.
-Remember context from the conversation.
+You are Olivia, a friendly AI companion.
+
+Speak naturally.
+
+Remember previous messages.
+
+Be warm and engaging.
 """
         }
     ]
 
-# Display previous messages
-for msg in st.session_state.messages:
-    if msg["role"] != "system":
-        with st.chat_message(msg["role"]):
-            st.write(msg["content"])
+# -------------------------
+# Display Chat
+# -------------------------
+for message in st.session_state.messages:
+    if message["role"] != "system":
+        avatar = "🤖" if message["role"] == "assistant" else "👤"
 
-# Chat input
-user_input = st.chat_input("Type your message...")
+        with st.chat_message(message["role"], avatar=avatar):
+            st.markdown(message["content"])
 
-if user_input:
+# -------------------------
+# User Input
+# -------------------------
+prompt = st.chat_input("Ask me anything...")
 
-    # Show user message
+if prompt:
+
     st.session_state.messages.append(
-        {"role": "user", "content": user_input}
+        {
+            "role":"user",
+            "content":prompt
+        }
     )
 
-    with st.chat_message("user"):
-        st.write(user_input)
+    with st.chat_message("user", avatar="👤"):
+        st.markdown(prompt)
 
-    # Get AI response
-    response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=st.session_state.messages,
-    )
+    with st.chat_message("assistant", avatar="🤖"):
 
-    bot_reply = response.choices[0].message.content
+        with st.spinner("Olivia is thinking..."):
 
-    # Save AI response
-    st.session_state.messages.append(
-        {"role": "assistant", "content": bot_reply}
-    )
+            try:
 
-    # Display AI response
-    with st.chat_message("assistant"):
-        st.write(bot_reply)
+                response = client.chat.completions.create(
+                    model="llama-3.3-70b-versatile",
+                    messages=st.session_state.messages,
+                    temperature=0.7,
+                    max_tokens=1024,
+                )
+
+                reply = response.choices[0].message.content
+
+                st.markdown(reply)
+
+                st.session_state.messages.append(
+                    {
+                        "role":"assistant",
+                        "content":reply
+                    }
+                )
+
+            except Exception as e:
+                st.error(f"Error: {e}")
+
+# -------------------------
+# Footer
+# -------------------------
+st.markdown("---")
+st.caption("© 2026 Olivia AI | Developed by Kamakshi")
