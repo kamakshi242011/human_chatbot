@@ -5,7 +5,7 @@ from groq import Groq
 # Page Configuration
 # -------------------------------
 st.set_page_config(
-    page_title="KAI Assistant",
+    page_title="K_AI Assistant",
     page_icon="🤖",
     layout="centered"
 )
@@ -30,7 +30,7 @@ footer {visibility:hidden;}
 # -------------------------------
 with st.sidebar:
 
-    st.title("🤖 Olivia AI")
+    st.title("🤖 K_AI")
 
     st.write("Human-like AI Assistant")
 
@@ -68,7 +68,7 @@ Remember previous conversation.
 # -------------------------------
 # Title
 # -------------------------------
-st.title("🤖 Olivia AI")
+st.title("🤖  K_AI")
 
 st.caption("Powered by Groq • Llama 3.3 70B")
 
