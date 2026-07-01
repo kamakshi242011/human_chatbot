@@ -94,7 +94,7 @@ if "messages" not in st.session_state:
             "role":"system",
 
             "content":"""
-You are Olivia.
+You are K_AI.
 
 Be friendly.
 
@@ -141,7 +141,7 @@ if prompt:
 
     with st.chat_message("assistant", avatar="🤖"):
 
-        with st.spinner("Olivia is thinking..."):
+        with st.spinner("K_AI is thinking..."):
 
             try:
 
@@ -177,6 +177,6 @@ if prompt:
 # -------------------------------
 st.markdown("---")
 
-st.caption("© 2026 Olivia AI | Developed by Kamakshi")
+st.caption("© 2026 K_AI | Developed by Kamakshi")
 
                 
